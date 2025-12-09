@@ -11,7 +11,7 @@ st.set_page_config(
 )
 # Title and description
 st.title("LinkedIn Usage Prediction App")
-st.write("Enter demographic information in the sidebar and click the button to predict whether a person uses Linkedin")
+st.write("Enter user information in the sidebar and click the button to predict whether a person uses Linkedin")
 
 # Load and prepare data
 @st.cache_data
@@ -157,10 +157,10 @@ with col2:
         st.write("---")
         
         # Display probabilities
-        st.write("**Probability Breakdown:**")
+        with st.expander("**Probability Breakdown:**"):
         
-        # Create probability bars
-        col_a, col_b = st.columns(2)
+            # Create probability bars
+             col_a, col_b = st.columns(2)
         
         with col_a:
             st.metric(
@@ -175,87 +175,162 @@ with col2:
                 value=f"{probability[1]:.1%}"
             )
             st.progress(probability[1])
+            
             st.write("**By Variable:**")
         
-        import matplotlib.pyplot as plt
-        
-        # Create figure with subplots
-        fig, axes = plt.subplots(3, 1, figsize=(8, 10))
-        
-        # 1. Income Analysis
-        income_range = range(1, 10)
-        income_probs = []
-        for inc in income_range:
-            test = pd.DataFrame({
-                'income': [inc],
-                'education': [education],
-                'parent': [parent],
-                'married': [married],
-                'female': [female],
-                'age': [age]
-            })
-            prob = model.predict_proba(test)[0][1]
-            income_probs.append(prob)
-        
-        axes[0].plot(income_range, income_probs, marker='o', linewidth=2, color='blue')
-        axes[0].axvline(x=income, color='red', linestyle='--', linewidth=2, label='Predicted Income')
-        axes[0].axhline(y=probability[1], color='red', linestyle=':', alpha=0.5)
-        axes[0].set_xlabel('Income Level')
-        axes[0].set_ylabel('LinkedIn Usage Probability')
-        axes[0].set_title('Income Impact on LinkedIn Usage')
-        axes[0].legend()
-        axes[0].grid(True, alpha=0.3)
-        
-        # 2. Education Analysis
-        education_range = range(1, 9)
-        education_probs = []
-        for edu in education_range:
-            test = pd.DataFrame({
-                'income': [income],
-                'education': [edu],
-                'parent': [parent],
-                'married': [married],
-                'female': [female],
-                'age': [age]
-            })
-            prob = model.predict_proba(test)[0][1]
-            education_probs.append(prob)
-        
-        axes[1].plot(education_range, education_probs, marker='o', linewidth=2, color='green')
-        axes[1].axvline(x=education, color='red', linestyle='--', linewidth=2, label='Predicted Education')
-        axes[1].axhline(y=probability[1], color='red', linestyle=':', alpha=0.5)
-        axes[1].set_xlabel('Education Level')
-        axes[1].set_ylabel('LinkedIn Usage Probability')
-        axes[1].set_title('Education Impact on LinkedIn Usage')
-        axes[1].legend()
-        axes[1].grid(True, alpha=0.3)
-        
-        # 3. Age Analysis
-        age_range = range(18, 98)
-        age_probs = []
-        for age_val in age_range:
-            test = pd.DataFrame({
-                'income': [income],
-                'education': [education],
-                'parent': [parent],
-                'married': [married],
-                'female': [female],
-                'age': [age_val]
-            })
-            prob = model.predict_proba(test)[0][1]
-            age_probs.append(prob)
-        
-        axes[2].plot(age_range, age_probs, marker='.', linewidth=2, color='purple')
-        axes[2].axvline(x=age, color='red', linestyle='--', linewidth=2, label='Predicted Age')
-        axes[2].axhline(y=probability[1], color='red', linestyle=':', alpha=0.5)
-        axes[2].set_xlabel('Age')
-        axes[2].set_ylabel('LinkedIn Usage Probability')
-        axes[2].set_title('Age Impact on LinkedIn Usage')
-        axes[2].legend()
-        axes[2].grid(True, alpha=0.3)
-        
-        plt.tight_layout()
-        st.pyplot(fig)
+            import matplotlib.pyplot as plt
+            
+            # Create figure with subplots
+            fig, axes = plt.subplots(3, 2, figsize=(12, 14))   
+
+            # 1. Income Analysis
+            income_range = range(1, 10)
+            income_probs = []
+            for inc in income_range:
+                test = pd.DataFrame({
+                    'income': [inc],
+                    'education': [education],
+                    'parent': [parent],
+                    'married': [married],
+                    'female': [female],
+                    'age': [age]
+                })
+                prob = model.predict_proba(test)[0][1]
+                income_probs.append(prob)
+            
+            axes[0,0].plot(income_range, income_probs, marker='o', linewidth=2, color='blue')
+            axes[0,0].axvline(x=income, color='red', linestyle='--', linewidth=2, label='Predicted Income')
+            axes[0,0].axhline(y=probability[1], color='red', linestyle=':', alpha=0.5)
+            axes[0,0].set_xlabel('Income Level')
+            axes[0,0].set_ylabel('LinkedIn Usage Probability')
+            axes[0,0].set_title('Income Impact on LinkedIn Usage')
+            axes[0,0].legend()
+            axes[0,0].grid(True, alpha=0.3)
+            
+            # 2. Education Analysis
+            education_range = range(1, 9)
+            education_probs = []
+            for edu in education_range:
+                test = pd.DataFrame({
+                    'income': [income],
+                    'education': [edu],
+                    'parent': [parent],
+                    'married': [married],
+                    'female': [female],
+                    'age': [age]
+                })
+                prob = model.predict_proba(test)[0][1]
+                education_probs.append(prob)
+            
+            axes[0, 1].plot(education_range, education_probs, marker='o', linewidth=2, color='green')
+            axes[0, 1].axvline(x=education, color='red', linestyle='--', linewidth=2, label='Predicted Education')
+            axes[0, 1].axhline(y=probability[1], color='red', linestyle=':', alpha=0.5)
+            axes[0, 1].set_xlabel('Education Level')
+            axes[0, 1].set_ylabel('LinkedIn Usage Probability')
+            axes[0, 1].set_title('Education Impact on LinkedIn Usage')
+            axes[0, 1].legend()
+            axes[0, 1].grid(True, alpha=0.3)
+            
+            # 3. Age Analysis
+            age_range = range(18, 98)
+            age_probs = []
+            for age_val in age_range:
+                test = pd.DataFrame({
+                    'income': [income],
+                    'education': [education],
+                    'parent': [parent],
+                    'married': [married],
+                    'female': [female],
+                    'age': [age_val]
+                })
+                prob = model.predict_proba(test)[0][1]
+                age_probs.append(prob)
+            
+            axes[1,0].plot(age_range, age_probs, marker='.', linewidth=2, color='purple')
+            axes[1,0].axvline(x=age, color='red', linestyle='--', linewidth=2, label='Predicted Age')
+            axes[1,0].axhline(y=probability[1], color='red', linestyle=':', alpha=0.5)
+            axes[1,0].set_xlabel('Age')
+            axes[1,0].set_ylabel('LinkedIn Usage Probability')
+            axes[1,0].set_title('Age Impact on LinkedIn Usage')
+            axes[1,0].legend()
+            axes[1,0].grid(True, alpha=0.3)
+            
+
+
+            # 4. Parent Status Analysis
+            parent_options = [0, 1]
+            parent_probs = []
+            for parent_val in parent_options:
+                test = pd.DataFrame({
+                    'income': [income],
+                    'education': [education],
+                    'parent': [parent_val],
+                    'married': [married],
+                    'female': [female],
+                    'age': [age]
+                })
+                prob = model.predict_proba(test)[0][1]
+                parent_probs.append(prob)
+            
+            colors_parent = ['lightcoral' if p == parent else 'orange' for p in parent_options]
+            bars1 = axes[1, 1].bar(['Not Parent', 'Parent'], parent_probs, color=colors_parent, edgecolor='black', linewidth=2)
+            axes[1, 1].axhline(y=probability[1], color='red', linestyle='--', linewidth=2, label='Predicted User Probability')
+            axes[1, 1].set_ylabel('LinkedIn Usage Probability')
+            axes[1, 1].set_title('Parent Status Impact on LinkedIn Usage')
+            axes[1, 1].set_ylim([0, 1])
+            axes[1, 1].legend()
+            axes[1, 1].grid(True, alpha=0.3, axis='y')
+            
+            # 5. Marital Status Analysis
+            married_options = [0, 1]
+            married_probs = []
+            for married_val in married_options:
+                test = pd.DataFrame({
+                    'income': [income],
+                    'education': [education],
+                    'parent': [parent],
+                    'married': [married_val],
+                    'female': [female],
+                    'age': [age]
+                })
+                prob = model.predict_proba(test)[0][1]
+                married_probs.append(prob)
+            
+            colors_married = ['lightcoral' if m == married else 'teal' for m in married_options]
+            bars2 = axes[2, 0].bar(['Not Married', 'Married'], married_probs, color=colors_married, edgecolor='black', linewidth=2)
+            axes[2, 0].axhline(y=probability[1], color='red', linestyle='--', linewidth=2, label='Predicted User Probability')
+            axes[2, 0].set_ylabel('LinkedIn Usage Probability')
+            axes[2, 0].set_title('Marital Status Impact on LinkedIn Usage')
+            axes[2, 0].set_ylim([0, 1])
+            axes[2, 0].legend()
+            axes[2, 0].grid(True, alpha=0.3, axis='y')
+            
+            # 6. Gender Analysis
+            female_options = [0, 1]
+            female_probs = []
+            for female_val in female_options:
+                test = pd.DataFrame({
+                    'income': [income],
+                    'education': [education],
+                    'parent': [parent],
+                    'married': [married],
+                    'female': [female_val],
+                    'age': [age]
+                })
+                prob = model.predict_proba(test)[0][1]
+                female_probs.append(prob)
+            
+            colors_gender = ['lightcoral' if f == female else 'pink' for f in female_options]
+            bars3 = axes[2, 1].bar(['Male', 'Female'], female_probs, color=colors_gender, edgecolor='black', linewidth=2)
+            axes[2, 1].axhline(y=probability[1], color='red', linestyle='--', linewidth=2, label='Predicted User Probability')
+            axes[2, 1].set_ylabel('LinkedIn Usage Probability')
+            axes[2, 1].set_title('Gender Impact on LinkedIn Usage')
+            axes[2, 1].set_ylim([0, 1])
+            axes[2, 1].legend()
+            axes[2, 1].grid(True, alpha=0.3, axis='y')
+            
+            plt.tight_layout()
+            st.pyplot(fig)
         
     else:
         st.info("<-  Enter user information and click 'Predict LinkedIn Usage' to see results")
